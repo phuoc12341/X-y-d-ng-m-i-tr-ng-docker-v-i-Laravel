@@ -206,6 +206,25 @@ ENTRYPOINT ["/scripts/entrypoint.sh"]
 
 CMD ["/scripts/command.sh"]
 ```
+Giải thích sơ qua về Dockerfile:
+FROM php:7.4-fpm: Dockerfile này được build dựa trên image php:7.4-fpm trên Dockerhub
+ARG user, ARG uid: khai báo 2 argument được truyền vào từ docker-compose file, ở đay mình muốn owner trong container này là user hiện tại của hệ thống
+
+Tiếp theo các đoạn phaias dưới là install các dependency và extension cho container, rồi cài composer
+
+WORKDIR /var/www/app: thiết lập pwd của hệ thống
+
+RUN useradd -G www-data,root -u $uid -d /home/$user $user: Tạo ra 1 user và gán quyền cho user này là user hiện tại của hệ thống
+
+COPY php/*.sh /scripts/: copy thư mục bên ngoài vào hệ thống
+
+USER $user: Set user hiện tại cho container 
+
+EXPOSE 9000: Mở port 9000
+
+ENTRYPOINT ["/scripts/entrypoint.sh"]: Định nghĩa các shell command chúng ta muốn chạy
+
+CMD ["/scripts/command.sh"]: Khai báo các shell command sẽ được chạy mặc định
 
 Ở trong Dockerfile này ta đã cài composer và expose port 9000
 
@@ -243,37 +262,6 @@ OK như vậy là xong, chúng ta vào http://127.0.0.1:88 để kiểm tra kế
 
 Tài liệu tham khảo:
 https://www.digitalocean.com/community/tutorials/how-to-set-up-laravel-nginx-and-mysql-with-docker-compose
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
